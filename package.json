@@ -1,0 +1,17 @@
+{
+  "name": "project-uberclaude",
+  "private": true,
+  "description": "Hierarchical Project Brain for AI Coding Assistants",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.2",
+    "tsx": "^4.21.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "cookie": "0.7.2"
+    }
+  }
+}

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iseeyou.sh — Your AI finally understands your project</title>
+<meta name="description" content="One decision in your code changes everything downstream. iseeyou.sh keeps your AI projects in sync — from code to marketing to content to support.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--bg-elevated:#12121a;--bg-card:#16161f;--border:#1e1e2e;--border-glow:#2a2a3d;--text:#e2e2e8;--text-dim:#6b6b80;--text-muted:#44445a;--accent:#00d4aa;--accent-dim:#00d4aa22;--purple:#8b5cf6;--purple-dim:#8b5cf622;--amber:#f59e0b;--red:#ef4444;--font-display:'Outfit',sans-serif;--font-mono:'JetBrains Mono',monospace}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-display);line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 0;background:linear-gradient(to bottom,var(--bg) 60%,transparent)}
+nav .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:var(--font-mono);font-size:1.1rem;font-weight:700;color:var(--accent);text-decoration:none;letter-spacing:-0.02em}
+.logo span{color:var(--text-dim)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{color:var(--text-dim);text-decoration:none;font-size:0.9rem;transition:color 0.2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--accent)!important;color:var(--bg)!important;padding:8px 20px!important;border-radius:6px;font-weight:600!important;font-size:0.85rem!important;transition:opacity 0.2s!important}
+.nav-cta:hover{opacity:0.85}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;padding-top:80px}
+.hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,var(--accent-dim) 0%,transparent 70%);top:10%;left:50%;transform:translateX(-50%);pointer-events:none;animation:pulse 8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.4;transform:translateX(-50%) scale(1)}50%{opacity:0.7;transform:translateX(-50%) scale(1.1)}}
+.hero-eyeline{font-family:var(--font-mono);font-size:0.85rem;color:var(--accent);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:24px;opacity:0;animation:fadeUp 0.8s ease forwards 0.2s}
+.hero h1{font-size:clamp(2.8rem,6vw,4.5rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;margin-bottom:28px;opacity:0;animation:fadeUp 0.8s ease forwards 0.4s}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.25rem;color:var(--text-dim);max-width:620px;font-weight:300;line-height:1.7;margin-bottom:40px;opacity:0;animation:fadeUp 0.8s ease forwards 0.6s}
+.hero-sub strong{color:var(--text);font-weight:500}
+.hero-actions{display:flex;gap:16px;align-items:center;opacity:0;animation:fadeUp 0.8s ease forwards 0.8s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--bg);padding:14px 28px;border-radius:8px;font-weight:600;font-size:1rem;text-decoration:none;transition:all 0.2s}
+.btn-primary:hover{opacity:0.85;transform:translateY(-1px)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text-dim);padding:14px 28px;border-radius:8px;font-weight:500;font-size:1rem;text-decoration:none;border:1px solid var(--border);transition:all 0.2s}
+.btn-ghost:hover{border-color:var(--border-glow);color:var(--text)}
+section{padding:100px 0}
+.section-label{font-family:var(--font-mono);font-size:0.8rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:16px}
+.section-title{font-size:clamp(2rem,4vw,3rem);font-weight:700;letter-spacing:-0.02em;margin-bottom:20px;line-height:1.15}
+.section-desc{color:var(--text-dim);font-size:1.1rem;max-width:640px;font-weight:300;line-height:1.7}
+.story{background:var(--bg-elevated)}
+.story-narrative{max-width:700px;margin-top:40px}
+.story-narrative p{color:var(--text-dim);font-size:1.05rem;line-height:1.8;margin-bottom:24px;font-weight:300}
+.story-narrative strong{color:var(--text);font-weight:500}
+.story-narrative em{color:var(--accent);font-style:normal}
+.flow{margin-top:60px;display:flex;flex-direction:column;gap:0;max-width:700px}
+.flow-node{display:flex;align-items:flex-start;gap:20px;padding:24px 0}
+.flow-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:40px}
+.flow-dot{width:12px;height:12px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.flow-connector{width:2px;flex-grow:1;min-height:40px;background:var(--border)}
+.flow-dot.purple{background:var(--purple)}
+.flow-dot.amber{background:var(--amber)}
+.flow-content h3{font-size:1.05rem;font-weight:600;margin-bottom:4px}
+.flow-content p{color:var(--text-dim);font-size:0.9rem;font-weight:300;line-height:1.6}
+.flow-badge{font-family:var(--font-mono);font-size:0.7rem;padding:2px 8px;border-radius:4px;margin-left:8px}
+.badge-auto{background:#22c55e22;color:#22c55e;border:1px solid #22c55e33}
+.badge-manual{background:#8b5cf622;color:#8b5cf6;border:1px solid #8b5cf633}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+.step{padding:32px 28px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;transition:border-color 0.3s}
+.step:hover{border-color:var(--border-glow)}
+.step-num{font-family:var(--font-mono);font-size:0.75rem;color:var(--accent);margin-bottom:16px}
+.step h3{font-size:1.15rem;font-weight:600;margin-bottom:12px}
+.step p{color:var(--text-dim);font-size:0.9rem;font-weight:300;line-height:1.7}
+.terminal{background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;overflow:hidden;font-family:var(--font-mono);font-size:0.85rem;line-height:1.8;margin-top:48px}
+.terminal-bar{display:flex;align-items:center;gap:8px;padding:14px 18px;background:var(--bg-card);border-bottom:1px solid var(--border)}
+.terminal-dot{width:12px;height:12px;border-radius:50%}
+.terminal-dot:nth-child(1){background:#ef4444}
+.terminal-dot:nth-child(2){background:#f59e0b}
+.terminal-dot:nth-child(3){background:#22c55e}
+.terminal-title{margin-left:8px;color:var(--text-dim);font-size:0.8rem}
+.terminal-body{padding:20px 24px}
+.terminal-body .prompt{color:var(--accent)}
+.terminal-body .cmd{color:var(--text)}
+.terminal-body .comment{color:var(--text-muted)}
+.terminal-body .output{color:var(--text-dim)}
+.terminal-body .highlight{color:var(--purple)}
+.terminal-body .success{color:#22c55e}
+.features-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-top:48px}
+.feature{padding:28px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;transition:border-color 0.3s}
+.feature:hover{border-color:var(--accent-dim)}
+.feature h3{font-size:1.05rem;font-weight:600;margin-bottom:8px}
+.feature p{color:var(--text-dim);font-size:0.9rem;font-weight:300;line-height:1.6}
+.cta{text-align:center;padding:140px 0}
+.cta-title{font-size:clamp(2.5rem,5vw,4rem);font-weight:700;letter-spacing:-0.03em;margin-bottom:20px;line-height:1.1}
+.cta-title em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.cta p{color:var(--text-dim);font-size:1.15rem;margin-bottom:36px;font-weight:300}
+.cta-install{display:inline-block;font-family:var(--font-mono);font-size:1rem;background:var(--bg-elevated);border:1px solid var(--border);padding:16px 32px;border-radius:10px;margin-bottom:24px;color:var(--text);cursor:pointer;transition:border-color 0.2s}
+.cta-install:hover{border-color:var(--border-glow)}
+.cta-install .prompt{color:var(--accent)}
+footer{padding:40px 0;border-top:1px solid var(--border);text-align:center;color:var(--text-muted);font-size:0.85rem}
+footer a{color:var(--text-dim);text-decoration:none}
+footer a:hover{color:var(--accent)}
+@media(max-width:768px){.features-grid,.steps{grid-template-columns:1fr}.nav-links a:not(.nav-cta){display:none}.hero-actions{flex-direction:column;align-items:flex-start}#who .container>div:last-child{grid-template-columns:1fr!important}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="#" class="logo">iseeyou<span>.sh</span></a>
+    <div class="nav-links">
+      <a href="#story">Why</a>
+      <a href="#how">How</a>
+      <a href="#setup">Setup</a>
+      <a href="#features">Features</a>
+      <a href="https://github.com/duckdivesurvive/iseeyou-sh" class="nav-cta">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="container">
+    <div class="hero-eyeline">I see you</div>
+    <h1>Your AI finally<br><em>understands your projects</em></h1>
+    <p class="hero-sub">
+      You renamed a feature in the codebase. But when you switch to marketing, docs, or content &mdash;
+      your AI has no idea. It starts blank. Every time.
+      <strong>iseeyou.sh gives every project a shared memory.</strong>
+    </p>
+    <div class="hero-actions">
+      <a href="https://github.com/duckdivesurvive/iseeyou-sh" class="btn-primary">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="#how" class="btn-ghost">How it works</a>
+    </div>
+
+    <div style="margin-top:64px;opacity:0;animation:fadeUp 0.8s ease forwards 1s">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div>
+          <span class="terminal-title">~/startup/marketing</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">npx iseeyou-sh init</span></div>
+          <div><span class="output">Workspace: My Startup</span></div>
+          <div><span class="output">Parent: Main Product</span></div>
+          <div><span class="output">Permissions: codebase:<span class="highlight">read</span> domain:<span class="highlight">read</span> decisions:<span class="highlight">read</span></span></div>
+          <div><span class="output">Found 8 .md files &mdash; scanning context...</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Marketing inherits Main Product knowledge</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Claude Code wired. Restart to activate.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="story" id="story">
+  <div class="container">
+    <div class="section-label">The real problem</div>
+    <h2 class="section-title">Claude Code does more than write code</h2>
+    <div class="story-narrative">
+      <p>You're a founder. You use AI across <strong>everything</strong> &mdash; building the product, writing marketing copy, creating content, drafting support docs, researching competitors. Each of these is a different project, a different Claude Code session.</p>
+      <p>But here's the thing: <strong>they're all connected.</strong> When you change the pricing model in the codebase, the marketing site needs to know. When you add a new feature, the content team needs to create posts about it. When you make an architectural decision, the docs project needs to reflect it.</p>
+      <p>Right now, <em>none of them talk to each other.</em> Every session starts blank. You re-explain your product to the marketing AI. You re-describe your stack to the docs AI. You repeat the same decisions to every project, every time.</p>
+      <p><strong>iseeyou.sh connects them.</strong> Log a decision in your codebase, and your marketing project sees it instantly. Change your product direction, and every downstream project knows. No re-explaining. No copy-pasting context. Just <em>one shared understanding</em> that flows from parent to child.</p>
+    </div>
+    <div class="flow">
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+        <div class="flow-content">
+          <h3>You log a decision in the main product <span class="flow-badge badge-manual">manual or auto</span></h3>
+          <p>"Switched from Stripe to Lemon Squeezy for payments"</p>
+        </div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot purple"></div><div class="flow-connector"></div></div>
+        <div class="flow-content">
+          <h3>Marketing project has access instantly <span class="flow-badge badge-auto">inherited</span></h3>
+          <p>When you write pricing copy and ask "what payment provider do we use?" &mdash; Claude knows. No need to go check the codebase.</p>
+        </div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot purple"></div><div class="flow-connector"></div></div>
+        <div class="flow-content">
+          <h3>Content project works from the same truth <span class="flow-badge badge-auto">inherited</span></h3>
+          <p>When Claude helps with social posts or blog articles, it has the real product context &mdash; not whatever you remembered to tell it</p>
+        </div>
+      </div>
+      <div class="flow-node">
+        <div class="flow-line"><div class="flow-dot amber"></div></div>
+        <div class="flow-content">
+          <h3>Support docs built on what's real <span class="flow-badge badge-auto">inherited</span></h3>
+          <p>Help articles, FAQ, onboarding guides &mdash; Claude has the actual product state to work from, not a stale mental model</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="container">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">One command. Everything connected.</h2>
+    <p class="section-desc">Set up each project with a parent. Permissions control what flows where. Context is injected before every AI prompt &mdash; automatically.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Initialize</h3>
+        <p>Run <code style="color:var(--accent);font-family:var(--font-mono);font-size:0.85em">iseeyou-sh init</code> in each project. Pick a parent. Set permissions. It scans your existing files and builds understanding automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Log decisions</h3>
+        <p>As you work, decisions get logged &mdash; manually or by Claude as it works. "Switched to Lemon Squeezy." "Renamed feature X." They propagate to every connected project.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Everything syncs</h3>
+        <p>Every AI session starts with full project context. The marketing AI knows the product. The content AI knows the strategy. No re-explaining. Ever.</p>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div>
+        <span class="terminal-title">~/startup/marketing</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh init</span></div>
+        <div><span class="output">Workspace: My Startup</span></div>
+        <div><span class="output">Parent: Main Product</span></div>
+        <div><span class="output">Permissions: codebase:<span class="highlight">read</span> domain:<span class="highlight">read</span> decisions:<span class="highlight">read</span></span></div>
+        <div><span class="output">Found 8 .md files &mdash; scanning context...</span></div>
+        <div><span class="success">&#10003;</span> <span class="output">Marketing inherits Main Product knowledge</span></div>
+        <div><span class="success">&#10003;</span> <span class="output">Claude Code wired. Restart to activate.</span></div>
+        <br>
+        <div><span class="comment"># Marketing AI now knows what the product does,</span></div>
+        <div><span class="comment"># what decisions were made, and what changed.</span></div>
+        <div><span class="comment"># Every session. Without you explaining.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GETTING STARTED -->
+<section id="setup" style="background:var(--bg-elevated)">
+  <div class="container">
+    <div class="section-label">Getting started</div>
+    <h2 class="section-title">What you need</h2>
+    <p class="section-desc">iseeyou.sh is a self-hosted tool. You run the database, you own the data. Here's how to set it up.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:48px;align-items:start">
+      <div>
+        <h3 style="font-size:1.1rem;font-weight:600;margin-bottom:20px">Prerequisites</h3>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--accent);font-family:var(--font-mono);font-size:0.85rem;flex-shrink:0;width:20px">1.</span>
+            <div><strong style="color:var(--text)">Node.js 20+</strong><br><span style="color:var(--text-dim);font-size:0.9rem">Required to run the CLI and MCP server</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--accent);font-family:var(--font-mono);font-size:0.85rem;flex-shrink:0;width:20px">2.</span>
+            <div><strong style="color:var(--text)">Docker</strong><br><span style="color:var(--text-dim);font-size:0.9rem">For running local Supabase (Postgres database)</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--accent);font-family:var(--font-mono);font-size:0.85rem;flex-shrink:0;width:20px">3.</span>
+            <div><strong style="color:var(--text)">Supabase CLI</strong><br><span style="color:var(--text-dim);font-size:0.9rem">Install with <code style="color:var(--accent);font-family:var(--font-mono);font-size:0.85em">npm install -g supabase</code></span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--accent);font-family:var(--font-mono);font-size:0.85rem;flex-shrink:0;width:20px">4.</span>
+            <div><strong style="color:var(--text)">Claude Code</strong><br><span style="color:var(--text-dim);font-size:0.9rem">The hooks and MCP server integrate with Claude Code</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-bar">
+          <div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div>
+          <span class="terminal-title">setup</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="comment"># 1. Set up the database (one-time)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">git clone https://github.com/duckdivesurvive/iseeyou-sh.git</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">cd iseeyou-sh && pnpm install</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">supabase start</span></div>
+          <div><span class="output">Applying 11 migrations...</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Database ready</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">npx tsx scripts/local-setup.ts</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">User created, credentials saved</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment"># 2. Initialize any project (repeat per project)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">cd ~/your-project</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">npx iseeyou-sh init</span></div>
+          <div><span class="output">Scanning files, setting up permissions...</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Claude Code wired. Restart to activate.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <p style="color:var(--text-muted);font-size:0.85rem;margin-top:24px">Full setup guide on <a href="https://github.com/duckdivesurvive/iseeyou-sh#quick-start" style="color:var(--accent);text-decoration:none">GitHub</a></p>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section id="who" style="background:var(--bg-elevated)">
+  <div class="container">
+    <div class="section-label">Who it's for</div>
+    <h2 class="section-title">Two audiences. One problem.</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:48px">
+      <div style="padding:32px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px">
+        <div style="font-size:2rem;margin-bottom:16px">&#x1f680;</div>
+        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:16px">For Founders</h3>
+        <p style="color:var(--text-dim);font-size:0.95rem;line-height:1.7;margin-bottom:16px">You use Claude Code for everything &mdash; not just coding. Product research, marketing copy, pitch decks, content strategy, support docs. But each project is an island.</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Marketing AI knows what the product actually does</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Content is based on real decisions, not memory</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Stop re-explaining your product to every session</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Log a decision once, it flows everywhere</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Dashboard to see the full picture across projects</li>
+        </ul>
+      </div>
+      <div style="padding:32px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px">
+        <div style="font-size:2rem;margin-bottom:16px">&#x1f4bb;</div>
+        <h3 style="font-size:1.3rem;font-weight:700;margin-bottom:16px">For Developers</h3>
+        <p style="color:var(--text-dim);font-size:0.95rem;line-height:1.7;margin-bottom:16px">You work across related codebases &mdash; main app, admin panel, mobile app, shared libraries. Claude Code doesn't know they share an API or follow the same conventions.</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px">
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Admin panel has access to the main product's documented knowledge</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Shared conventions across all codebases</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Logged decisions visible to child projects that have access</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> Permission control &mdash; read-only access for some projects</li>
+          <li style="color:var(--text-dim);font-size:0.9rem;display:flex;gap:8px"><span style="color:var(--accent)">&#10003;</span> MCP tools for Claude to read/write project knowledge</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">What's under the hood</h2>
+    <div class="features-grid">
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f5c2;</div><h3>Project hierarchy</h3><p>Parent-child projects up to 3 levels deep. Main product &rarr; Marketing &rarr; Social media. Knowledge flows down with permission control.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f512;</div><h3>Permission control</h3><p>Five categories: codebase, domain, decisions, conventions, task state. Each set to read, write, or none per project. A child can never exceed its parent.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x26a1;</div><h3>Automatic context injection</h3><p>A Claude Code hook injects project context before every prompt. Decisions, task state, and parent knowledge &mdash; all there before you ask.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f4dc;</div><h3>Decision ledger</h3><p>Append-only log with rationale, alternatives, and supersedes tracking. Log manually or let Claude do it. Decisions propagate to child projects.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f4cb;</div><h3>Task state</h3><p>What's in progress, blocked, completed, next. Parsed from your TODO.md on init, updated by Claude as you work.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f4c1;</div><h3>Context from existing files</h3><p>Init scans your CLAUDE.md, README, session notes, docs &mdash; everything. No manual data entry. Your project model is built in seconds.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f310;</div><h3>Dashboard</h3><p>Visual project tree, decision browser, task state viewer. See everything across all your projects at a glance.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f527;</div><h3>Open source &amp; self-hosted</h3><p>Your data stays on your machine. Supabase backend, MIT license. No vendor lock-in. No cloud dependency.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <h2 class="cta-title">Stop re-explaining.<br><em>Start connecting.</em></h2>
+    <p>One command to give your AI a memory that spans every project.</p>
+    <div class="cta-install" onclick="navigator.clipboard.writeText('npx iseeyou-sh init')">
+      <span class="prompt">$</span> npx iseeyou-sh init
+    </div>
+    <br><br>
+    <a href="https://github.com/duckdivesurvive/iseeyou-sh" class="btn-primary" style="font-size:1.1rem;padding:16px 36px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      Star on GitHub
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p><a href="https://github.com/duckdivesurvive/iseeyou-sh">iseeyou.sh</a> &mdash; open source, MIT licensed</p>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "iseeyou": {
+      "command": "npx",
+      "args": ["tsx", "/path/to/iseeyou-sh/packages/mcp/src/index.ts"],
+      "env": {
+        "SUPABASE_URL": "http://127.0.0.1:54351",
+        "SUPABASE_SERVICE_ROLE_KEY": "your-service-role-key"
+      }
+    }
+  }
+}

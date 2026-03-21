@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Env files
+.env
+app/.env
+
+# Nuxt
+app/.nuxt/
+app/.output/
+
+# Build output
+dist/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# iseeyou.sh local config (contains UUIDs, not committed)
+.uberclaude.local
+.mcp.json
+.claude/settings.local.json
+
+# Vitest
+packages/**/node_modules/.vite/
+
+# pnpm
+pnpm-lock.yaml
