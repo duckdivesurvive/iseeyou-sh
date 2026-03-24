@@ -35,20 +35,26 @@ describe('getProjectPermissions', () => {
 });
 
 describe('checkWritePermission', () => {
-  it('allows write when project has write permission', async () => {
-    await expect(checkWritePermission(client, rootProjectId, 'decisions')).resolves.not.toThrow();
+  it('always allows writing to own project regardless of permission level', async () => {
+    // Child has read-only on decisions, but writing to OWN project is always allowed
+    await expect(checkWritePermission(client, childProjectId, 'decisions')).resolves.not.toThrow();
   });
 
-  it('rejects when project only has read permission', async () => {
-    await expect(checkWritePermission(client, childProjectId, 'decisions')).rejects.toThrow('read-only');
-  });
-
-  it('rejects when project has none permission', async () => {
+  it('allows writing to own project even with none permission', async () => {
     const noneProjectId = await seedTestProject(client, workspaceId, { name: 'None', slug: 'none-proj', parentId: rootProjectId });
     await seedPermissions(client, noneProjectId, {
       codebase: 'none', domain: 'none', decisions: 'none', conventions: 'none', task_state: 'write',
     });
-    await expect(checkWritePermission(client, noneProjectId, 'decisions')).rejects.toThrow();
+    await expect(checkWritePermission(client, noneProjectId, 'decisions')).resolves.not.toThrow();
+  });
+
+  it('rejects writing to a different project when permission is read-only', async () => {
+    // Child trying to write to parent's decisions — should be blocked
+    await expect(checkWritePermission(client, childProjectId, 'decisions', rootProjectId)).rejects.toThrow('read-only');
+  });
+
+  it('allows writing to a different project when permission is write', async () => {
+    await expect(checkWritePermission(client, rootProjectId, 'decisions', childProjectId)).resolves.not.toThrow();
   });
 });
 

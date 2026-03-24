@@ -23,17 +23,32 @@ export async function getProjectPermissions(
   return map;
 }
 
+/**
+ * Check write permission. A project can ALWAYS write to its own data
+ * (decisions, task_state, model entries). The permission level only
+ * controls what a project can read/write on its PARENT's data.
+ *
+ * If targetProjectId matches the requesting project, write is always allowed.
+ * If writing to a parent's data, the permission level is checked.
+ */
 export async function checkWritePermission(
   client: SupabaseClient,
   projectId: string,
-  category: ContextCategory
+  category: ContextCategory,
+  targetProjectId?: string
 ): Promise<void> {
+  // Writing to own project is always allowed
+  if (!targetProjectId || targetProjectId === projectId) {
+    return;
+  }
+
+  // Writing to a different project — check permissions
   const perms = await getProjectPermissions(client, projectId);
   const level = perms[category] || 'none';
 
   if (level !== 'write') {
     throw new Error(
-      `Permission denied: project has read-only or no access to "${category}". ` +
+      `Permission denied: project has read-only or no access to "${category}" on target project. ` +
       `Current level: "${level}". Write permission required.`
     );
   }

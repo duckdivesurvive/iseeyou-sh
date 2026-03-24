@@ -2,7 +2,7 @@
 // packages/mcp/src/index.ts
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { getSupabaseClient } from './supabase.js';
+import { getSupabaseClient, resetSupabaseClient } from './supabase.js';
 import { registerCreateProjectTool } from './tools/uc_create_project.js';
 import { registerGetContextTool } from './tools/uc_get_context.js';
 import { registerLogDecisionTool } from './tools/uc_log_decision.js';
@@ -11,14 +11,27 @@ import { registerGetProjectModelTool } from './tools/uc_get_project_model.js';
 import { registerListProjectsTool } from './tools/uc_list_projects.js';
 import { registerSetPermissionsTool } from './tools/uc_set_permissions.js';
 import { registerUpdateModelTool } from './tools/uc_update_model.js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 async function main() {
   const server = new McpServer({
     name: 'uberclaude',
-    version: '0.1.0',
+    version: '0.1.8',
   });
 
-  const client = getSupabaseClient();
+  // Proxy that always delegates to the current Supabase client.
+  // If the connection drops, resetSupabaseClient() clears the cache
+  // and the next call through the proxy gets a fresh client.
+  const client: SupabaseClient = new Proxy({} as SupabaseClient, {
+    get(_target, prop) {
+      const realClient = getSupabaseClient();
+      const value = (realClient as any)[prop];
+      if (typeof value === 'function') {
+        return value.bind(realClient);
+      }
+      return value;
+    },
+  });
 
   // Register all 8 tools
   registerCreateProjectTool(server, client);

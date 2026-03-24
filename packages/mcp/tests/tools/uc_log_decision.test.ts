@@ -36,14 +36,14 @@ describe('logDecision', () => {
     expect(result.id).toBeDefined();
   });
 
-  it('rejects when project only has read on decisions', async () => {
-    await expect(
-      logDecision(client, {
-        project_id: readOnlyProjectId,
-        decision: 'Should fail',
-        rationale: 'No write access',
-      })
-    ).rejects.toThrow('read-only');
+  it('allows read-only project to log its own decisions', async () => {
+    // A project can always write its own decisions, regardless of parent permission level
+    const result = await logDecision(client, {
+      project_id: readOnlyProjectId,
+      decision: 'Own decision',
+      rationale: 'Projects can always write their own data',
+    });
+    expect(result.decision).toBe('Own decision');
   });
 
   it('supports supersedes_id', async () => {

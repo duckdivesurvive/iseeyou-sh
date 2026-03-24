@@ -45,14 +45,13 @@ describe('updateModel', () => {
     expect(result.value).toBe('Has email, name, and role');
   });
 
-  it('rejects when project has read-only on the category', async () => {
-    await expect(
-      updateModel(client, {
-        project_id: readOnlyProjectId,
-        category: 'domain',
-        key: 'Something',
-        value: 'Should fail',
-      })
-    ).rejects.toThrow('read-only');
+  it('allows read-only project to write its own model entries', async () => {
+    const result = await updateModel(client, {
+      project_id: readOnlyProjectId,
+      category: 'domain',
+      key: 'OwnEntry',
+      value: 'Projects can always write their own data',
+    });
+    expect(result.key).toBe('OwnEntry');
   });
 });
