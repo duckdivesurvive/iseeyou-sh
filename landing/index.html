@@ -273,18 +273,15 @@ footer a:hover{color:var(--accent)}
           <span class="terminal-title">setup</span>
         </div>
         <div class="terminal-body">
-          <div><span class="comment"># 1. Set up the database (one-time)</span></div>
-          <div><span class="prompt">$</span> <span class="cmd">git clone https://github.com/duckdivesurvive/iseeyou-sh.git</span></div>
-          <div><span class="prompt">$</span> <span class="cmd">cd iseeyou-sh && pnpm install</span></div>
-          <div><span class="prompt">$</span> <span class="cmd">supabase start</span></div>
-          <div><span class="output">Applying 11 migrations...</span></div>
-          <div><span class="success">&#10003;</span> <span class="output">Database ready</span></div>
-          <div><span class="prompt">$</span> <span class="cmd">npx tsx scripts/local-setup.ts</span></div>
-          <div><span class="success">&#10003;</span> <span class="output">User created, credentials saved</span></div>
+          <div><span class="comment"># 1. Install and set up (one-time)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">npm install -g iseeyou-sh</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh setup</span></div>
+          <div><span class="output">Starting Supabase, running migrations...</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Database ready, credentials saved</span></div>
           <div>&nbsp;</div>
           <div><span class="comment"># 2. Initialize any project (repeat per project)</span></div>
           <div><span class="prompt">$</span> <span class="cmd">cd ~/your-project</span></div>
-          <div><span class="prompt">$</span> <span class="cmd">npx iseeyou-sh init</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh init</span></div>
           <div><span class="output">Scanning files, setting up permissions...</span></div>
           <div><span class="success">&#10003;</span> <span class="output">Claude Code wired. Restart to activate.</span></div>
         </div>

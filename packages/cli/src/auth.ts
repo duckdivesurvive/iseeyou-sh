@@ -10,6 +10,8 @@ export interface Credentials {
   refresh_token: string;
   supabase_url: string;
   supabase_anon_key?: string;
+  supabase_service_role_key?: string;
+  monorepo_path?: string;
 }
 
 const DEFAULT_CRED_PATH = join(homedir(), '.uberclaude', 'credentials.json');

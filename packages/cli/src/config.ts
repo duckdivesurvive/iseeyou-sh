@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { homedir } from 'node:os';
 
 export interface ProjectConfig {
   workspace: string;
@@ -54,12 +55,25 @@ export function requireLocalConfig(dir?: string): LocalConfig {
 
 /**
  * Resolve the root of the uberclaude monorepo (where packages/ lives).
- * Works by walking up from this file's location.
+ * Checks: 1) credentials file, 2) env var, 3) walk up from this file.
  */
-function getUberclaudeRoot(): string {
+function getUberclaudeRoot(): string | null {
+  // Check credentials
+  try {
+    const credPath = join(homedir(), '.uberclaude', 'credentials.json');
+    const creds = JSON.parse(readFileSync(credPath, 'utf-8'));
+    if (creds.monorepo_path && existsSync(join(creds.monorepo_path, 'packages', 'mcp'))) {
+      return creds.monorepo_path;
+    }
+  } catch {}
+
+  // Check env var
+  if (process.env.ISEEYOU_ROOT && existsSync(join(process.env.ISEEYOU_ROOT, 'packages', 'mcp'))) {
+    return process.env.ISEEYOU_ROOT;
+  }
+
+  // Walk up from this file
   const thisFile = fileURLToPath(import.meta.url);
-  // thisFile is packages/cli/src/config.ts (or dist/config.js)
-  // Walk up to find the monorepo root (has packages/ dir)
   let dir = dirname(thisFile);
   for (let i = 0; i < 5; i++) {
     if (existsSync(join(dir, 'packages', 'mcp')) && existsSync(join(dir, 'packages', 'hooks'))) {
@@ -67,14 +81,16 @@ function getUberclaudeRoot(): string {
     }
     dir = dirname(dir);
   }
-  throw new Error('Could not find uberclaude monorepo root');
+
+  return null;
 }
 
 /**
  * Write .mcp.json for Claude Code MCP server registration.
  */
-export function writeClaudeCodeMcpConfig(dir: string, supabaseUrl: string, serviceRoleKey: string): void {
+export function writeClaudeCodeMcpConfig(dir: string, supabaseUrl: string, serviceRoleKey: string): boolean {
   const root = getUberclaudeRoot();
+  if (!root) return false;
   const mcpServerPath = join(root, 'packages', 'mcp', 'src', 'index.ts');
 
   const config = {
@@ -91,13 +107,15 @@ export function writeClaudeCodeMcpConfig(dir: string, supabaseUrl: string, servi
   };
 
   writeFileSync(join(dir, '.mcp.json'), JSON.stringify(config, null, 2) + '\n');
+  return true;
 }
 
 /**
  * Write Claude Code hooks config for context injection.
  */
-export function writeClaudeCodeHooksConfig(dir: string, supabaseUrl: string, serviceRoleKey: string): void {
+export function writeClaudeCodeHooksConfig(dir: string, supabaseUrl: string, serviceRoleKey: string): boolean {
   const root = getUberclaudeRoot();
+  if (!root) return false;
   const userPromptScript = join(root, 'packages', 'hooks', 'scripts', 'user-prompt-submit.sh');
   const preCompactScript = join(root, 'packages', 'hooks', 'scripts', 'pre-compact.sh');
 
@@ -144,4 +162,5 @@ export function writeClaudeCodeHooksConfig(dir: string, supabaseUrl: string, ser
   };
 
   writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
+  return true;
 }

@@ -1,33 +1,60 @@
 // packages/cli/src/commands/init.ts
 import { input, select, confirm, checkbox } from '@inquirer/prompts';
 import chalk from 'chalk';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { join, basename } from 'node:path';
-import { getAuthenticatedClient } from '../auth.js';
+import { getAuthenticatedClient, loadCredentials } from '../auth.js';
 import { readLocalConfig, writeProjectConfig, writeLocalConfig, writeClaudeCodeMcpConfig, writeClaudeCodeHooksConfig } from '../config.js';
 
 const ALL_CATEGORIES = ['codebase', 'domain', 'decisions', 'conventions', 'task_state'] as const;
 const PERMISSION_LEVELS = ['write', 'read', 'none'] as const;
 
-export async function initCommand(): Promise<void> {
+export async function initCommand(options?: { fresh?: boolean }): Promise<void> {
   console.log(chalk.bold('uberclaude init\n'));
 
   const client = await getAuthenticatedClient();
   const cwd = process.cwd();
 
   // Get current user ID for workspace ownership
-  const { data: { user }, error: userError } = await client.auth.getUser();
-  if (userError || !user) {
-    console.error(chalk.red('Failed to get current user. Run `uc login` first.'));
+  let user: any;
+  try {
+    const { data, error: userError } = await client.auth.getUser();
+    if (userError || !data.user) throw new Error(userError?.message || 'No user');
+    user = data.user;
+  } catch (err: any) {
+    if (err.message?.includes('fetch') || err.message?.includes('ECONNREFUSED')) {
+      console.error(chalk.red('Cannot connect to Supabase.'));
+      console.error(chalk.dim('Is Supabase running? Try: iseeyou-sh setup'));
+    } else {
+      console.error(chalk.red('Not authenticated. Run `iseeyou-sh setup` first.'));
+    }
     process.exit(1);
   }
 
   // Check if project already exists here
   const existingConfig = readLocalConfig(cwd);
-  if (existingConfig) {
-    console.log(chalk.dim('Project already initialized. Re-scanning context files...\n'));
-    await rescanContextFiles(client, cwd, existingConfig.project_id, existingConfig.workspace_id);
-    return;
+  if (existingConfig && !options?.fresh) {
+    const action = await select({
+      message: 'Project already initialized. What do you want to do?',
+      choices: [
+        { name: 'Re-scan context files and update model', value: 'rescan' },
+        { name: 'Start fresh (delete and re-create project)', value: 'fresh' },
+        { name: 'Cancel', value: 'cancel' },
+      ],
+    });
+
+    if (action === 'cancel') return;
+    if (action === 'rescan') {
+      await rescanContextFiles(client, cwd, existingConfig.project_id, existingConfig.workspace_id);
+      return;
+    }
+    // action === 'fresh': delete old project and fall through to full init
+    console.log(chalk.dim('Removing old project...'));
+    await client.from('task_states').delete().eq('project_id', existingConfig.project_id);
+    await client.from('decisions').delete().eq('project_id', existingConfig.project_id);
+    await client.from('project_models').delete().eq('project_id', existingConfig.project_id);
+    await client.from('project_permissions').delete().eq('project_id', existingConfig.project_id);
+    await client.from('projects').delete().eq('id', existingConfig.project_id);
   }
 
   // Step 1: Select or create workspace
@@ -263,19 +290,29 @@ export async function initCommand(): Promise<void> {
   writeProjectConfig(cwd, { workspace: workspaceSlug, project: projectSlug });
   writeLocalConfig(cwd, { project_id: project.id, workspace_id: workspaceId });
 
+  // Step 8b: Add iseeyou.sh instructions to CLAUDE.md
+  appendClaudeMdInstructions(cwd);
+
   // Step 9: Wire Claude Code (MCP server + hooks)
-  const supabaseUrl = process.env.SUPABASE_URL || 'http://127.0.0.1:54351';
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const creds = loadCredentials();
+  const supabaseUrl = process.env.SUPABASE_URL || creds?.supabase_url || 'http://127.0.0.1:54351';
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || creds?.supabase_service_role_key || '';
 
   if (serviceRoleKey) {
-    writeClaudeCodeMcpConfig(cwd, supabaseUrl, serviceRoleKey);
-    writeClaudeCodeHooksConfig(cwd, supabaseUrl, serviceRoleKey);
-    console.log(chalk.green(`\n✓ Claude Code wired`));
-    console.log(chalk.dim(`  .mcp.json — MCP server registered`));
-    console.log(chalk.dim(`  .claude/settings.local.json — hooks configured`));
+    const mcpOk = writeClaudeCodeMcpConfig(cwd, supabaseUrl, serviceRoleKey);
+    const hooksOk = writeClaudeCodeHooksConfig(cwd, supabaseUrl, serviceRoleKey);
+    if (mcpOk && hooksOk) {
+      console.log(chalk.green(`\n✓ Claude Code wired`));
+      console.log(chalk.dim(`  .mcp.json — MCP server registered`));
+      console.log(chalk.dim(`  .claude/settings.local.json — hooks configured`));
+    } else {
+      console.log(chalk.yellow(`\n⚠ Could not find iseeyou.sh monorepo (needed for MCP server + hooks)`));
+      console.log(chalk.dim(`  Run: npx tsx scripts/local-setup.ts from the cloned repo to save the path`));
+      console.log(chalk.dim(`  Or set ISEEYOU_ROOT=/path/to/iseeyou-sh`));
+    }
   } else {
-    console.log(chalk.yellow(`\n⚠ SUPABASE_SERVICE_ROLE_KEY not set — skipping Claude Code wiring`));
-    console.log(chalk.dim(`  Set it and run 'uc init' again, or configure manually`));
+    console.log(chalk.yellow(`\n⚠ No service role key found — skipping Claude Code wiring`));
+    console.log(chalk.dim(`  Run npx tsx scripts/local-setup.ts from the cloned repo first`));
   }
 
   console.log(chalk.green(`\n✓ Project "${projectName}" created in workspace "${workspaceSlug}"`));
@@ -393,6 +430,47 @@ async function seedTaskStateFromTodo(client: any, cwd: string, projectId: string
   }
 }
 
+const ISEEYOU_CLAUDE_MD = `
+# iseeyou.sh — Project Context
+
+This project is connected to iseeyou.sh for persistent context management.
+
+## Decision Logging
+When you make, agree on, or discover a significant decision during this session, log it using the \`uc_log_decision\` MCP tool. This includes:
+- Architectural choices ("we chose X over Y because Z")
+- Product direction changes ("renamed feature X to Y")
+- Convention decisions ("all API routes use snake_case")
+- Strategy decisions ("targeting SMEs first, enterprise later")
+
+Call \`uc_log_decision\` with the decision, rationale, and alternatives considered. Set \`propagate: true\` if child projects should see it.
+
+After every 5-10 exchanges, or when a brainstorming topic wraps up, ask the user: "Want me to log the decisions we've made so far?" Then call uc_log_decision for each one they confirm.
+
+## Task State
+When you complete meaningful work or the task focus shifts, update the task state using \`uc_update_state\`.
+
+## Project Knowledge
+When you learn something significant about the project (domain entities, conventions, architecture), store it using \`uc_update_model\`.
+`.trim();
+
+function appendClaudeMdInstructions(dir: string): void {
+  const claudeMdPath = join(dir, 'CLAUDE.md');
+  const marker = '# iseeyou.sh';
+
+  try {
+    if (existsSync(claudeMdPath)) {
+      const existing = readFileSync(claudeMdPath, 'utf-8');
+      if (existing.includes(marker)) return; // Already has instructions
+      writeFileSync(claudeMdPath, existing + '\n\n' + ISEEYOU_CLAUDE_MD + '\n');
+    } else {
+      writeFileSync(claudeMdPath, ISEEYOU_CLAUDE_MD + '\n');
+    }
+    console.log(chalk.green(`  CLAUDE.md — iseeyou.sh instructions added`));
+  } catch {
+    // Skip if can't write
+  }
+}
+
 const IGNORE_DIRS = new Set([
   'node_modules', '.nuxt', '.output', 'dist', '.git', '.next', '.cache',
   'vendor', 'build', 'coverage', '.turbo', '.vercel',
@@ -495,13 +573,13 @@ async function rescanContextFiles(client: any, cwd: string, projectId: string, w
   console.log(chalk.green(`Updated ${count} model entries.`));
 
   // Re-wire Claude Code config
-  const supabaseUrl = process.env.SUPABASE_URL || 'http://127.0.0.1:54351';
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const creds = loadCredentials();
+  const supabaseUrl = process.env.SUPABASE_URL || creds?.supabase_url || 'http://127.0.0.1:54351';
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || creds?.supabase_service_role_key || '';
 
   if (serviceRoleKey) {
-    writeClaudeCodeMcpConfig(cwd, supabaseUrl, serviceRoleKey);
-    writeClaudeCodeHooksConfig(cwd, supabaseUrl, serviceRoleKey);
-    console.log(chalk.green(`✓ Claude Code config updated`));
+    const ok = writeClaudeCodeMcpConfig(cwd, supabaseUrl, serviceRoleKey) && writeClaudeCodeHooksConfig(cwd, supabaseUrl, serviceRoleKey);
+    if (ok) console.log(chalk.green(`✓ Claude Code config updated`));
   }
 
   // Also re-seed task state from TODO.md

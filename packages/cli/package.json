@@ -1,14 +1,27 @@
 {
-  "name": "@uberclaude/cli",
-  "version": "0.1.0",
-  "private": true,
+  "name": "iseeyou-sh",
+  "version": "0.1.8",
+  "description": "Hierarchical Project Brain for AI Coding Assistants",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "uc": "dist/index.js"
+    "iseeyou-sh": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "src",
+    "src/migrations"
+  ],
+  "keywords": ["ai", "claude", "mcp", "context", "project-management", "cli"],
+  "author": "duckdivesurvive",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/duckdivesurvive/iseeyou-sh"
+  },
+  "homepage": "https://iseeyou.sh",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r src/migrations dist/migrations",
     "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest"

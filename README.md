@@ -30,11 +30,24 @@ Context is injected before every prompt via Claude Code hooks. No manual searchi
 
 ## Quick Start
 
-```bash
-# Install
-npm install -g iseeyou-sh
+### Prerequisites
 
-# Initialize your project
+- Node.js 20+
+- Docker (for local Supabase)
+- Supabase CLI (`npm install -g supabase`)
+
+### Setup (one-time)
+
+```bash
+npm install -g iseeyou-sh
+iseeyou-sh setup
+```
+
+This handles everything: starts a local Supabase instance, runs database migrations, creates a user, and saves credentials. No git clone needed.
+
+### Initialize a project
+
+```bash
 cd ~/your-project
 iseeyou-sh init
 ```
@@ -45,42 +58,9 @@ The `init` command:
 3. Scans all `.md` files for project context
 4. Parses `TODO.md` into task state
 5. Wires Claude Code (MCP server + hooks)
+6. Adds decision logging instructions to CLAUDE.md
 
-Restart Claude Code and it just works.
-
-Or run without installing:
-
-```bash
-npx iseeyou-sh init
-```
-
-### Prerequisites
-
-- Node.js 20+
-- Docker (for local Supabase)
-- Supabase CLI (`npm install -g supabase`)
-
-### Self-Hosted Setup
-
-```bash
-# Clone the repo (for Supabase migrations + MCP server + dashboard)
-git clone https://github.com/duckdivesurvive/iseeyou-sh.git
-cd iseeyou-sh
-pnpm install
-
-# Start local Supabase
-supabase start
-
-# Create test user and save credentials
-SUPABASE_URL=$(supabase status -o json | jq -r '.API_URL') \
-SUPABASE_SERVICE_ROLE_KEY=$(supabase status -o json | jq -r '.SERVICE_ROLE_KEY') \
-SUPABASE_ANON_KEY=$(supabase status -o json | jq -r '.ANON_KEY') \
-npx tsx scripts/local-setup.ts
-
-# Initialize your first project
-cd ~/your-project
-iseeyou-sh init
-```
+Restart Claude Code and it just works. Repeat for each project.
 
 ## Architecture
 
@@ -137,6 +117,7 @@ Claude sees the project context before processing your question — no manual se
 
 | Command | Description |
 |---------|-------------|
+| `iseeyou-sh setup` | One-time setup: database, user, credentials |
 | `iseeyou-sh init` | Interactive project setup + context scanning |
 | `iseeyou-sh login` | Authenticate via email/password |
 | `iseeyou-sh link` | Link existing `.uberclaude` to UUIDs |

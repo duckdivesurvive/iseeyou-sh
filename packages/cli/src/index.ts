@@ -9,13 +9,19 @@ import { statusCommand } from './commands/status.js';
 import { logCommand } from './commands/log.js';
 import { permissionsCommand } from './commands/permissions.js';
 import { modelCommand } from './commands/model.js';
+import { setupCommand } from './commands/setup.js';
 
 const program = new Command();
 
 program
-  .name('uc')
-  .description('uberclaude — Hierarchical Project Brain for AI Coding Assistants')
-  .version('0.1.0');
+  .name('iseeyou-sh')
+  .description('iseeyou.sh — Your AI finally understands your project')
+  .version('0.1.8');
+
+program
+  .command('setup')
+  .description('One-time setup: database, user, credentials (run this first)')
+  .action(setupCommand);
 
 program
   .command('login')
@@ -25,6 +31,7 @@ program
 program
   .command('init')
   .description('Set up a new project interactively')
+  .option('--fresh', 'Start fresh, removing existing project')
   .action(initCommand);
 
 program
