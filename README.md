@@ -26,7 +26,7 @@ iseeyou.sh gives each project a persistent model (domain, codebase, conventions,
 - **Marketing** can *read* the main product's domain and features but can't *write* to the codebase
 - **A content project** inherits its parent's knowledge automatically
 
-Context is injected before every prompt via Claude Code hooks. No manual searching. No re-explaining.
+iseeyou.sh is an **MCP server** that registers globally with Claude Code. Once set up, Claude has access to 8 tools for reading and writing project knowledge — in every session, in every project. Context is also injected automatically before every prompt via hooks. No manual searching. No re-explaining.
 
 ## Quick Start
 
@@ -66,11 +66,13 @@ Restart Claude Code and it just works. Repeat for each project.
 
 ## Architecture
 
+iseeyou.sh is primarily an **MCP (Model Context Protocol) server** — registered once globally via `claude mcp add --scope user`. This means the tools are available in every Claude Code session without any per-project configuration. Hooks provide supplementary automatic context injection.
+
 ```
 packages/
-├── mcp/              # MCP server (8 tools, stdio transport)
-├── cli/              # CLI (iseeyou-sh init, login, tree, etc.)
-└── hooks/            # Claude Code lifecycle hooks
+├── mcp/              # MCP server (8 tools, stdio transport) — the core
+├── cli/              # CLI (setup, init, register, backup, etc.)
+└── hooks/            # Claude Code hooks (auto context injection)
 app/                  # Nuxt 4 dashboard (read-only)
 supabase/
 └── migrations/       # 11 SQL migrations
@@ -105,15 +107,19 @@ Levels: **write** (full access), **read** (can see, can't modify), **none** (exc
 
 A child project cannot have more access than its parent. Enforced at both app and database level.
 
-### Context Injection
+### How Claude Gets Context
 
-On every prompt, the `UserPromptSubmit` hook:
+There are two paths — both work together:
+
+**1. MCP tools (on demand):** Claude can call `uc_get_context`, `uc_get_project_model`, etc. at any time. These tools are always available because the MCP server is registered globally.
+
+**2. Hook injection (automatic):** The `UserPromptSubmit` hook fires before every prompt:
 1. Reads `.uberclaude.local` to find the active project
 2. Walks up the parent chain (max 3 levels)
 3. Collects permitted model entries + decisions + task state
 4. Injects as plain text before your prompt
 
-Claude sees the project context before processing your question — no manual searching needed.
+Between the two, Claude always has project context — automatically on every prompt, and on demand via tools.
 
 ## CLI Commands
 

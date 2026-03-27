@@ -196,23 +196,23 @@ footer a:hover{color:var(--accent)}
 <section id="how">
   <div class="container">
     <div class="section-label">How it works</div>
-    <h2 class="section-title">One command. Everything connected.</h2>
-    <p class="section-desc">Set up each project with a parent. Permissions control what flows where. Context is injected before every AI prompt &mdash; automatically.</p>
+    <h2 class="section-title">An MCP server. Registered once. Works everywhere.</h2>
+    <p class="section-desc">iseeyou.sh is a <strong style="color:var(--text)">Model Context Protocol (MCP) server</strong> that registers globally with Claude Code. Once set up, Claude has tools to read and write project knowledge &mdash; in every session, every project. Hooks inject context automatically before each prompt.</p>
     <div class="steps">
       <div class="step">
         <div class="step-num">01</div>
-        <h3>Initialize</h3>
-        <p>Run <code style="color:var(--accent);font-family:var(--font-mono);font-size:0.85em">iseeyou-sh init</code> in each project. Pick a parent. Set permissions. It scans your existing files and builds understanding automatically.</p>
+        <h3>Setup &amp; register</h3>
+        <p>Run <code style="color:var(--accent);font-family:var(--font-mono);font-size:0.85em">iseeyou-sh setup</code> once. It starts Supabase, registers the MCP server globally with Claude Code via <code style="color:var(--accent);font-family:var(--font-mono);font-size:0.85em">claude mcp add --scope user</code>, and saves credentials.</p>
       </div>
       <div class="step">
         <div class="step-num">02</div>
-        <h3>Log decisions</h3>
-        <p>As you work, decisions get logged &mdash; manually or by Claude as it works. "Switched to Lemon Squeezy." "Renamed feature X." They propagate to every connected project.</p>
+        <h3>Initialize projects</h3>
+        <p>Run <code style="color:var(--accent);font-family:var(--font-mono);font-size:0.85em">iseeyou-sh init</code> in each project. Pick a parent. Set permissions. It scans your files and builds understanding. Claude logs decisions as you work &mdash; they propagate to every connected project.</p>
       </div>
       <div class="step">
         <div class="step-num">03</div>
-        <h3>Everything syncs</h3>
-        <p>Every AI session starts with full project context. The marketing AI knows the product. The content AI knows the strategy. No re-explaining. Ever.</p>
+        <h3>Claude just knows</h3>
+        <p>The MCP tools are available everywhere. Context is injected before every prompt. The marketing AI knows the product. The content AI knows the strategy. No re-explaining. Ever.</p>
       </div>
     </div>
     <div class="terminal">
@@ -339,7 +339,7 @@ footer a:hover{color:var(--accent)}
     <div class="features-grid">
       <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f5c2;</div><h3>Project hierarchy</h3><p>Parent-child projects up to 3 levels deep. Main product &rarr; Marketing &rarr; Social media. Knowledge flows down with permission control.</p></div>
       <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f512;</div><h3>Permission control</h3><p>Five categories: codebase, domain, decisions, conventions, task state. Each set to read, write, or none per project. A child can never exceed its parent.</p></div>
-      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x26a1;</div><h3>Automatic context injection</h3><p>A Claude Code hook injects project context before every prompt. Decisions, task state, and parent knowledge &mdash; all there before you ask.</p></div>
+      <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x26a1;</div><h3>Global MCP server</h3><p>Registered once with <code style="font-family:var(--font-mono);font-size:0.85em;color:var(--accent)">claude mcp add --scope user</code>. 8 tools available in every Claude Code session. Hooks also inject context before every prompt automatically.</p></div>
       <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f4dc;</div><h3>Decision ledger</h3><p>Append-only log with rationale, alternatives, and supersedes tracking. Log manually or let Claude do it. Decisions propagate to child projects.</p></div>
       <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f4cb;</div><h3>Task state</h3><p>What's in progress, blocked, completed, next. Parsed from your TODO.md on init, updated by Claude as you work.</p></div>
       <div class="feature"><div style="font-size:1.5rem;margin-bottom:12px">&#x1f4c1;</div><h3>Context from existing files</h3><p>Init scans your CLAUDE.md, README, session notes, docs &mdash; everything. No manual data entry. Your project model is built in seconds.</p></div>

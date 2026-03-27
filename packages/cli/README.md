@@ -26,7 +26,7 @@ Startup
 
 Run `iseeyou-sh init` in each project directory. Pick a parent. Set permissions. The tool scans your existing `.md` files and builds a project model.
 
-From then on, a Claude Code hook injects the project's context — including inherited parent knowledge — before every prompt. No re-explaining. No context loss between sessions.
+iseeyou.sh is an **MCP server** that registers globally with Claude Code via `claude mcp add --scope user`. Once registered, Claude has 8 tools for reading and writing project knowledge — available in every session, every project. Context is also injected automatically before every prompt via hooks. No re-explaining. No context loss between sessions.
 
 ## Commands
 
