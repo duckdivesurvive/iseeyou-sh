@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { getAuthenticatedClient, loadCredentials } from '../auth.js';
-import { readLocalConfig, writeProjectConfig, writeLocalConfig, writeClaudeCodeMcpConfig, writeClaudeCodeHooksConfig } from '../config.js';
+import { readLocalConfig, writeProjectConfig, writeLocalConfig, writeClaudeCodeHooksConfig } from '../config.js';
 
 const ALL_CATEGORIES = ['codebase', 'domain', 'decisions', 'conventions', 'task_state'] as const;
 const PERMISSION_LEVELS = ['write', 'read', 'none'] as const;
@@ -293,26 +293,23 @@ export async function initCommand(options?: { fresh?: boolean }): Promise<void> 
   // Step 8b: Add iseeyou.sh instructions to CLAUDE.md
   appendClaudeMdInstructions(cwd);
 
-  // Step 9: Wire Claude Code (MCP server + hooks)
+  // Step 9: Wire Claude Code hooks (MCP server is registered globally via `iseeyou-sh register`)
   const creds = loadCredentials();
   const supabaseUrl = process.env.SUPABASE_URL || creds?.supabase_url || 'http://127.0.0.1:54351';
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || creds?.supabase_service_role_key || '';
 
   if (serviceRoleKey) {
-    const mcpOk = writeClaudeCodeMcpConfig(cwd, supabaseUrl, serviceRoleKey);
     const hooksOk = writeClaudeCodeHooksConfig(cwd, supabaseUrl, serviceRoleKey);
-    if (mcpOk && hooksOk) {
-      console.log(chalk.green(`\n✓ Claude Code wired`));
-      console.log(chalk.dim(`  .mcp.json — MCP server registered`));
-      console.log(chalk.dim(`  .claude/settings.local.json — hooks configured`));
+    if (hooksOk) {
+      console.log(chalk.green(`\n✓ Claude Code hooks configured`));
+      console.log(chalk.dim(`  .claude/settings.local.json — context injection hooks`));
     } else {
-      console.log(chalk.yellow(`\n⚠ Could not find iseeyou.sh monorepo (needed for MCP server + hooks)`));
-      console.log(chalk.dim(`  Run: npx tsx scripts/local-setup.ts from the cloned repo to save the path`));
-      console.log(chalk.dim(`  Or set ISEEYOU_ROOT=/path/to/iseeyou-sh`));
+      console.log(chalk.yellow(`\n⚠ Could not find iseeyou.sh monorepo (needed for hooks)`));
+      console.log(chalk.dim(`  Run \`iseeyou-sh setup\` or set ISEEYOU_ROOT=/path/to/iseeyou-sh`));
     }
   } else {
-    console.log(chalk.yellow(`\n⚠ No service role key found — skipping Claude Code wiring`));
-    console.log(chalk.dim(`  Run npx tsx scripts/local-setup.ts from the cloned repo first`));
+    console.log(chalk.yellow(`\n⚠ No service role key found — skipping hooks`));
+    console.log(chalk.dim(`  Run \`iseeyou-sh setup\` first`));
   }
 
   console.log(chalk.green(`\n✓ Project "${projectName}" created in workspace "${workspaceSlug}"`));
@@ -572,14 +569,14 @@ async function rescanContextFiles(client: any, cwd: string, projectId: string, w
 
   console.log(chalk.green(`Updated ${count} model entries.`));
 
-  // Re-wire Claude Code config
+  // Re-wire Claude Code hooks
   const creds = loadCredentials();
   const supabaseUrl = process.env.SUPABASE_URL || creds?.supabase_url || 'http://127.0.0.1:54351';
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || creds?.supabase_service_role_key || '';
 
   if (serviceRoleKey) {
-    const ok = writeClaudeCodeMcpConfig(cwd, supabaseUrl, serviceRoleKey) && writeClaudeCodeHooksConfig(cwd, supabaseUrl, serviceRoleKey);
-    if (ok) console.log(chalk.green(`✓ Claude Code config updated`));
+    const ok = writeClaudeCodeHooksConfig(cwd, supabaseUrl, serviceRoleKey);
+    if (ok) console.log(chalk.green(`✓ Claude Code hooks updated`));
   }
 
   // Also re-seed task state from TODO.md

@@ -143,7 +143,7 @@ footer a:hover{color:var(--accent)}
           <div><span class="output">Permissions: codebase:<span class="highlight">read</span> domain:<span class="highlight">read</span> decisions:<span class="highlight">read</span></span></div>
           <div><span class="output">Found 8 .md files &mdash; scanning context...</span></div>
           <div><span class="success">&#10003;</span> <span class="output">Marketing inherits Main Product knowledge</span></div>
-          <div><span class="success">&#10003;</span> <span class="output">Claude Code wired. Restart to activate.</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Hooks configured. Restart to activate.</span></div>
         </div>
       </div>
     </div>
@@ -227,7 +227,7 @@ footer a:hover{color:var(--accent)}
         <div><span class="output">Permissions: codebase:<span class="highlight">read</span> domain:<span class="highlight">read</span> decisions:<span class="highlight">read</span></span></div>
         <div><span class="output">Found 8 .md files &mdash; scanning context...</span></div>
         <div><span class="success">&#10003;</span> <span class="output">Marketing inherits Main Product knowledge</span></div>
-        <div><span class="success">&#10003;</span> <span class="output">Claude Code wired. Restart to activate.</span></div>
+        <div><span class="success">&#10003;</span> <span class="output">Hooks configured. Restart to activate.</span></div>
         <br>
         <div><span class="comment"># Marketing AI now knows what the product does,</span></div>
         <div><span class="comment"># what decisions were made, and what changed.</span></div>
@@ -278,12 +278,17 @@ footer a:hover{color:var(--accent)}
           <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh setup</span></div>
           <div><span class="output">Starting Supabase, running migrations...</span></div>
           <div><span class="success">&#10003;</span> <span class="output">Database ready, credentials saved</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">MCP server registered globally</span></div>
           <div>&nbsp;</div>
           <div><span class="comment"># 2. Initialize any project (repeat per project)</span></div>
           <div><span class="prompt">$</span> <span class="cmd">cd ~/your-project</span></div>
           <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh init</span></div>
           <div><span class="output">Scanning files, setting up permissions...</span></div>
-          <div><span class="success">&#10003;</span> <span class="output">Claude Code wired. Restart to activate.</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Hooks configured. Restart to activate.</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment"># 3. Back up your data (run periodically)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh backup</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">42 rows saved to supabase/seed.sql</span></div>
         </div>
       </div>
     </div>
@@ -348,8 +353,8 @@ footer a:hover{color:var(--accent)}
   <div class="container">
     <h2 class="cta-title">Stop re-explaining.<br><em>Start connecting.</em></h2>
     <p>One command to give your AI a memory that spans every project.</p>
-    <div class="cta-install" onclick="navigator.clipboard.writeText('npx iseeyou-sh init')">
-      <span class="prompt">$</span> npx iseeyou-sh init
+    <div class="cta-install" onclick="navigator.clipboard.writeText('npm install -g iseeyou-sh && iseeyou-sh setup')">
+      <span class="prompt">$</span> npm install -g iseeyou-sh && iseeyou-sh setup
     </div>
     <br><br>
     <a href="https://github.com/duckdivesurvive/iseeyou-sh" class="btn-primary" style="font-size:1.1rem;padding:16px 36px">

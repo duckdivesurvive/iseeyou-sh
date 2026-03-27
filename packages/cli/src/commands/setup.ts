@@ -6,7 +6,8 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync, readdirSync } from 
 import { join, dirname } from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
+import { execSync, execFileSync } from 'node:child_process';
+import { registerCommand } from './register.js';
 
 const TEST_EMAIL = 'dev@iseeyou.local';
 const TEST_PASSWORD = 'localdev123';
@@ -174,6 +175,15 @@ export async function setupCommand(): Promise<void> {
     }, null, 2), { mode: 0o600 });
 
     console.log(chalk.green(`  Credentials saved to ${credPath}`));
+
+    // Step 8: Register MCP server globally with Claude Code
+    console.log(chalk.dim('6. Registering MCP server with Claude Code...'));
+    try {
+      await registerCommand();
+    } catch {
+      console.log(chalk.yellow('  Could not register MCP server automatically.'));
+      console.log(chalk.dim('  Run `iseeyou-sh register` manually after setup.'));
+    }
 
     console.log(chalk.green('\n✓ Setup complete!\n'));
     console.log('Next steps:');

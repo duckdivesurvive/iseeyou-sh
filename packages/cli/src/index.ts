@@ -10,13 +10,15 @@ import { logCommand } from './commands/log.js';
 import { permissionsCommand } from './commands/permissions.js';
 import { modelCommand } from './commands/model.js';
 import { setupCommand } from './commands/setup.js';
+import { backupCommand } from './commands/backup.js';
+import { registerCommand } from './commands/register.js';
 
 const program = new Command();
 
 program
   .name('iseeyou-sh')
   .description('iseeyou.sh — Your AI finally understands your project')
-  .version('0.1.8');
+  .version('0.1.9');
 
 program
   .command('setup')
@@ -63,5 +65,16 @@ program
   .command('model [action] [args...]')
   .description('Browse or manage project model entries')
   .action(modelCommand);
+
+program
+  .command('backup')
+  .description('Dump all project data to supabase/seed.sql (auto-restores on start)')
+  .option('-o, --output <path>', 'Output file path (default: supabase/seed.sql)')
+  .action(backupCommand);
+
+program
+  .command('register')
+  .description('Register iseeyou.sh MCP server globally with Claude Code')
+  .action(registerCommand);
 
 program.parse();

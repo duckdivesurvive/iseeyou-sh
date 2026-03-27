@@ -43,7 +43,7 @@ npm install -g iseeyou-sh
 iseeyou-sh setup
 ```
 
-This handles everything: starts a local Supabase instance, runs database migrations, creates a user, and saves credentials. No git clone needed.
+This handles everything: starts a local Supabase instance, runs database migrations, creates a user, saves credentials, and registers the MCP server globally with Claude Code.
 
 ### Initialize a project
 
@@ -57,8 +57,10 @@ The `init` command:
 2. Names the project, picks a parent, sets permissions
 3. Scans all `.md` files for project context
 4. Parses `TODO.md` into task state
-5. Wires Claude Code (MCP server + hooks)
+5. Configures Claude Code hooks for context injection
 6. Adds decision logging instructions to CLAUDE.md
+
+The MCP server is registered globally during `setup`, so it's available in every project without per-project `.mcp.json` files.
 
 Restart Claude Code and it just works. Repeat for each project.
 
@@ -117,8 +119,10 @@ Claude sees the project context before processing your question — no manual se
 
 | Command | Description |
 |---------|-------------|
-| `iseeyou-sh setup` | One-time setup: database, user, credentials |
+| `iseeyou-sh setup` | One-time setup: database, user, credentials, MCP registration |
 | `iseeyou-sh init` | Interactive project setup + context scanning |
+| `iseeyou-sh register` | Register MCP server globally with Claude Code |
+| `iseeyou-sh backup` | Dump all data to supabase/seed.sql (auto-restores on start) |
 | `iseeyou-sh login` | Authenticate via email/password |
 | `iseeyou-sh link` | Link existing `.uberclaude` to UUIDs |
 | `iseeyou-sh tree` | Print project hierarchy |

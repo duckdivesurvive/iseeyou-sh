@@ -57,7 +57,7 @@ export function requireLocalConfig(dir?: string): LocalConfig {
  * Resolve the root of the uberclaude monorepo (where packages/ lives).
  * Checks: 1) credentials file, 2) env var, 3) walk up from this file.
  */
-function getUberclaudeRoot(): string | null {
+export function getMonorepoRoot(): string | null {
   // Check credentials
   try {
     const credPath = join(homedir(), '.uberclaude', 'credentials.json');
@@ -89,7 +89,7 @@ function getUberclaudeRoot(): string | null {
  * Write .mcp.json for Claude Code MCP server registration.
  */
 export function writeClaudeCodeMcpConfig(dir: string, supabaseUrl: string, serviceRoleKey: string): boolean {
-  const root = getUberclaudeRoot();
+  const root = getMonorepoRoot();
   if (!root) return false;
   const mcpServerPath = join(root, 'packages', 'mcp', 'src', 'index.ts');
 
@@ -114,7 +114,7 @@ export function writeClaudeCodeMcpConfig(dir: string, supabaseUrl: string, servi
  * Write Claude Code hooks config for context injection.
  */
 export function writeClaudeCodeHooksConfig(dir: string, supabaseUrl: string, serviceRoleKey: string): boolean {
-  const root = getUberclaudeRoot();
+  const root = getMonorepoRoot();
   if (!root) return false;
   const userPromptScript = join(root, 'packages', 'hooks', 'scripts', 'user-prompt-submit.sh');
   const preCompactScript = join(root, 'packages', 'hooks', 'scripts', 'pre-compact.sh');
