@@ -35,6 +35,7 @@ iseeyou.sh is an **MCP server** that registers globally with Claude Code. Once s
 - Node.js 20+
 - Docker (for local Supabase)
 - Supabase CLI (`npm install -g supabase`)
+- Claude Code
 
 ### Setup (one-time)
 
@@ -43,7 +44,7 @@ npm install -g iseeyou-sh
 iseeyou-sh setup
 ```
 
-This handles everything: starts a local Supabase instance, runs database migrations, creates a user, saves credentials, and registers the MCP server globally with Claude Code.
+This handles everything: starts a local Supabase instance, runs database migrations, creates a user, saves credentials, and registers the MCP server globally with Claude Code via `claude mcp add --scope user`. After setup, 8 MCP tools are available in every Claude Code session.
 
 ### Initialize a project
 

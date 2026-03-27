@@ -137,13 +137,16 @@ footer a:hover{color:var(--accent)}
           <span class="terminal-title">~/startup/marketing</span>
         </div>
         <div class="terminal-body">
-          <div><span class="prompt">$</span> <span class="cmd">npx iseeyou-sh init</span></div>
-          <div><span class="output">Workspace: My Startup</span></div>
-          <div><span class="output">Parent: Main Product</span></div>
-          <div><span class="output">Permissions: codebase:<span class="highlight">read</span> domain:<span class="highlight">read</span> decisions:<span class="highlight">read</span></span></div>
-          <div><span class="output">Found 8 .md files &mdash; scanning context...</span></div>
+          <div><span class="comment"># One-time setup registers MCP server globally</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh setup</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Database ready</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">MCP server registered with Claude Code (<span class="highlight">claude mcp add --scope user</span>)</span></div>
+          <div>&nbsp;</div>
+          <div><span class="comment"># Then init each project</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">cd ~/startup/marketing</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh init</span></div>
+          <div><span class="output">Parent: Main Product | Permissions: codebase:<span class="highlight">read</span> domain:<span class="highlight">read</span> decisions:<span class="highlight">read</span></span></div>
           <div><span class="success">&#10003;</span> <span class="output">Marketing inherits Main Product knowledge</span></div>
-          <div><span class="success">&#10003;</span> <span class="output">Hooks configured. Restart to activate.</span></div>
         </div>
       </div>
     </div>
@@ -262,7 +265,7 @@ footer a:hover{color:var(--accent)}
           </div>
           <div style="display:flex;gap:12px;align-items:flex-start">
             <span style="color:var(--accent);font-family:var(--font-mono);font-size:0.85rem;flex-shrink:0;width:20px">4.</span>
-            <div><strong style="color:var(--text)">Claude Code</strong><br><span style="color:var(--text-dim);font-size:0.9rem">The hooks and MCP server integrate with Claude Code</span></div>
+            <div><strong style="color:var(--text)">Claude Code</strong><br><span style="color:var(--text-dim);font-size:0.9rem">MCP server registers globally via <code style="color:var(--accent);font-family:var(--font-mono);font-size:0.85em">claude mcp add</code></span></div>
           </div>
         </div>
       </div>
@@ -278,7 +281,9 @@ footer a:hover{color:var(--accent)}
           <div><span class="prompt">$</span> <span class="cmd">iseeyou-sh setup</span></div>
           <div><span class="output">Starting Supabase, running migrations...</span></div>
           <div><span class="success">&#10003;</span> <span class="output">Database ready, credentials saved</span></div>
-          <div><span class="success">&#10003;</span> <span class="output">MCP server registered globally</span></div>
+          <div><span class="output">Registering MCP server with Claude Code...</span></div>
+          <div><span class="success">&#10003;</span> <span class="output">Registered via <span class="highlight">claude mcp add --scope user</span></span></div>
+          <div><span class="success">&#10003;</span> <span class="output">8 tools available in every Claude Code session</span></div>
           <div>&nbsp;</div>
           <div><span class="comment"># 2. Initialize any project (repeat per project)</span></div>
           <div><span class="prompt">$</span> <span class="cmd">cd ~/your-project</span></div>
