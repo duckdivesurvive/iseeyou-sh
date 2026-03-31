@@ -430,24 +430,25 @@ async function seedTaskStateFromTodo(client: any, cwd: string, projectId: string
 const ISEEYOU_CLAUDE_MD = `
 # iseeyou.sh — Project Context
 
-This project is connected to iseeyou.sh for persistent context management.
+This project is connected to iseeyou.sh, an MCP server for persistent context management. You have access to these tools in every session:
 
-## Decision Logging
-When you make, agree on, or discover a significant decision during this session, log it using the \`uc_log_decision\` MCP tool. This includes:
-- Architectural choices ("we chose X over Y because Z")
-- Product direction changes ("renamed feature X to Y")
-- Convention decisions ("all API routes use snake_case")
-- Strategy decisions ("targeting SMEs first, enterprise later")
+## Reading Context (use these when asked about the project)
+- \`uc_get_context\` — full project context: decisions, model entries, task state, parent chain. **Call this when the user asks "where are we up to", "what have we decided", or anything about project state.**
+- \`uc_get_project_model\` — project model entries by category (codebase, domain, conventions, decisions)
+- \`uc_list_projects\` — workspace project tree
 
-Call \`uc_log_decision\` with the decision, rationale, and alternatives considered. Set \`propagate: true\` if child projects should see it.
+## Writing Context (use these as you work)
+- \`uc_log_decision\` — log decisions (architectural, product, convention, strategy). Set \`propagate: true\` if child projects should see it.
+- \`uc_update_state\` — update task state when work completes or focus shifts
+- \`uc_update_model\` — store project knowledge (domain entities, conventions, architecture)
+- \`uc_set_permissions\` — update project permissions
 
-After every 5-10 exchanges, or when a brainstorming topic wraps up, ask the user: "Want me to log the decisions we've made so far?" Then call uc_log_decision for each one they confirm.
-
-## Task State
-When you complete meaningful work or the task focus shifts, update the task state using \`uc_update_state\`.
-
-## Project Knowledge
-When you learn something significant about the project (domain entities, conventions, architecture), store it using \`uc_update_model\`.
+## When to use these tools
+- **User asks about project state/decisions/context**: call \`uc_get_context\` first, don't guess
+- **You make or discover a decision**: call \`uc_log_decision\`
+- **You learn something about the project**: call \`uc_update_model\`
+- **Work completes or shifts**: call \`uc_update_state\`
+- After every 5-10 exchanges, ask: "Want me to log the decisions we've made?" Then call \`uc_log_decision\` for each confirmed one.
 `.trim();
 
 function appendClaudeMdInstructions(dir: string): void {
